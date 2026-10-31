@@ -2,243 +2,701 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Cyclist Integrated Safety (CIS), a UCSB Computer Engineering ECE 189 capstone project building smart bicycle safety technology." />
   <title>CIS | Cyclist Integrated Safety</title>
-
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --cream: #fbfaf0;
+      --paper: #fffef8;
+      --plum: #75223f;
+      --plum-dark: #4e142e;
+      --sage: #9dbe80;
+      --sage-pale: #e4edd8;
+      --ink: #302c2b;
+      --muted: #675e60;
+      --line: #e6ddd8;
+    }
 
+    * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #101820;
-      color: #f4f7f5;
-      line-height: 1.6;
+      color: var(--ink);
+      background: var(--cream);
+      font: 16px/1.65 system-ui, -apple-system,
+            "Segoe UI", Arial, sans-serif;
+    }
+
+    a { color: inherit; }
+
+    .container {
+      width: min(1120px, calc(100% - 44px));
+      margin: auto;
+    }
+
+    .skip {
+      position: absolute;
+      left: -9999px;
+      top: 8px;
+      background: white;
+      padding: 8px;
+    }
+
+    .skip:focus { left: 8px; z-index: 99; }
+
+    .topbar {
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .navwrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 76px;
+      gap: 16px;
+    }
+
+    .brand {
+      color: var(--plum);
+      text-decoration: none;
+      font-weight: 850;
+      letter-spacing: .04em;
+      font-size: 1.28rem;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-weight: 500;
+      font-size: .8rem;
+      letter-spacing: 0;
+      margin-left: 9px;
     }
 
     nav {
-      padding: 18px 8%;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
       flex-wrap: wrap;
-      gap: 15px;
-      background: #172630;
+      gap: 18px;
     }
 
     nav a {
-      color: #dbe5de;
+      color: var(--plum-dark);
       text-decoration: none;
-      margin-left: 15px;
+      font-weight: 650;
+      font-size: .93rem;
     }
 
-    nav a:hover { color: #9ac6a5; }
+    nav a:hover, nav a:focus-visible {
+      text-decoration: underline;
+      text-underline-offset: 5px;
+    }
 
     .hero {
-      text-align: center;
-      padding: 100px 8%;
+      padding: 78px 0 88px;
+      background:
+        radial-gradient(
+          circle at 80% 15%,
+          #e5eed7 0,
+          transparent 40%
+        ),
+        var(--cream);
     }
 
-    .hero h1 {
-      font-size: clamp(36px, 6vw, 64px);
-      margin-bottom: 8px;
-    }
-
-    .accent { color: #9ac6a5; }
-
-    .subtitle {
-      color: #b9c9c1;
-      font-size: 19px;
-    }
-
-    section { padding: 65px 8%; }
-
-    .alt { background: #172630; }
-
-    h2 { color: #a6d2b0; }
-
-    .cards {
+    .hero-inner {
       display: grid;
-      grid-template-columns:
-        repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
+      grid-template-columns: 1.08fr .92fr;
+      align-items: center;
+      gap: 60px;
+    }
+
+    .eyebrow {
+      color: var(--plum);
+      text-transform: uppercase;
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .17em;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      font-size: clamp(2.8rem, 5.4vw, 5rem);
+      line-height: 1.08;
+      letter-spacing: -.045em;
+      color: var(--plum-dark);
+      margin: 20px 0;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--plum);
+    }
+
+    .lead {
+      font-size: 1.12rem;
+      max-width: 590px;
+      color: #5a5252;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .button {
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--plum);
+      color: white;
+      border-radius: 9px;
+      padding: 11px 19px;
+      font-weight: 750;
+    }
+
+    .button.secondary {
+      color: var(--plum);
+      border: 1px solid var(--plum);
+      background: transparent;
+    }
+
+    .logo-panel {
+      background: #fffef8;
+      border: 1px solid #e9e2dc;
+      border-radius: 28px;
+      padding: 30px;
+      box-shadow: 0 14px 50px #50203512;
+    }
+
+    .logo-panel img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    section {
+      padding: 80px 0;
+      scroll-margin-top: 82px;
+    }
+
+    .section-heading {
+      max-width: 710px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      font-size: clamp(1.9rem, 3.7vw, 2.9rem);
+      color: var(--plum-dark);
+      line-height: 1.2;
+      letter-spacing: -.035em;
+      margin: 8px 0 15px;
+    }
+
+    .section-heading p { color: var(--muted); }
+
+    .light {
+      background: var(--paper);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
     }
 
     .card {
-      background: #243640;
-      border: 1px solid #3c5659;
-      border-radius: 12px;
-      padding: 24px;
+      border: 1px solid #e6dadc;
+      background: white;
+      padding: 27px;
+      border-radius: 17px;
+      box-shadow: 0 6px 25px #3d243006;
     }
 
-    .card h3 { color: #b4e0bc; }
+    .card .num {
+      width: 41px;
+      height: 41px;
+      background: var(--sage-pale);
+      color: var(--plum);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 11px;
+      font-weight: 850;
+      margin-bottom: 18px;
+    }
+
+    .card h3 {
+      font-size: 1.11rem;
+      color: var(--plum-dark);
+      margin: 0 0 8px;
+    }
+
+    .card p {
+      font-size: .94rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .architecture {
+      background: var(--plum-dark);
+      color: white;
+    }
+
+    .architecture h2 { color: white; }
+
+    .architecture .section-heading p {
+      color: #e0cbd3;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .flow-box {
+      padding: 24px 20px;
+      border: 1px solid #a4798d;
+      border-radius: 13px;
+      background: #ffffff0c;
+    }
+
+    .flow-box strong {
+      display: block;
+      color: #dbedc4;
+      margin-bottom: 8px;
+    }
+
+    .flow-box small { color: #f0e2e7; }
+
+    .arrow {
+      align-self: center;
+      font-size: 1.65rem;
+      color: #bfd79e;
+    }
+
+    .architecture-note {
+      margin-top: 20px;
+      color: #f0e2e7;
+      font-size: .91rem;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .member {
+      padding: 23px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+    }
+
+    .member strong {
+      display: block;
+      color: var(--plum-dark);
+      font-size: 1.03rem;
+    }
+
+    .member span {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .milestones {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .milestone {
+      border-top: 4px solid var(--sage);
+      padding: 18px 4px 0;
+    }
+
+    .milestone h3 {
+      color: var(--plum-dark);
+      margin-bottom: 8px;
+    }
+
+    .milestone p { color: var(--muted); }
 
     footer {
-      text-align: center;
-      padding: 24px;
-      color: #a5b8b1;
+      padding: 35px 0;
+      background: var(--plum-dark);
+      color: #f0e7e9;
+      font-size: .9rem;
+    }
+
+    footer .container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    @media (max-width: 850px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .logo-panel { max-width: 520px; }
+
+      .grid, .team-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .flow { grid-template-columns: 1fr; }
+
+      .arrow {
+        transform: rotate(90deg);
+        justify-self: center;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .navwrap {
+        padding: 12px 0;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      nav { gap: 13px; }
+      .hero { padding: 48px 0 64px; }
+      section { padding: 58px 0; }
+
+      .grid, .team-grid, .milestones {
+        grid-template-columns: 1fr;
+      }
+
+      .logo-panel { padding: 18px; }
+      .brand span { display: none; }
     }
   </style>
 </head>
 
 <body>
 
-  <nav>
-    <strong>CIS</strong>
-    <div>
-      <a href="#about">About</a>
-      <a href="#features">Features</a>
-      <a href="#team">Team</a>
+  <a href="#main" class="skip">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container navwrap">
+      <a class="brand" href="#home">
+        CIS <span>CYCLIST INTEGRATED SAFETY</span>
+      </a>
+
+      <nav aria-label="Main navigation">
+        <a href="#about">About</a>
+        <a href="#features">Features</a>
+        <a href="#system">System</a>
+        <a href="#team">Team</a>
+        <a href="#progress">Progress</a>
+      </nav>
     </div>
-  </nav>
-
-  <header class="hero">
-    <h1>
-      Cyclist <span class="accent">Integrated Safety</span>
-    </h1>
-
-    <p class="subtitle">
-      Ride Smarter. Ride Safer.
-    </p>
-
-    <p>
-      UC Santa Barbara | Computer Engineering
-      <br>
-      ECE 189 Senior Capstone Project
-    </p>
   </header>
 
-  <section id="about" class="alt">
-    <h2>About Our Project</h2>
+  <main id="main">
 
-    <p>
-      Cyclist Integrated Safety (CIS) is a smart bicycle
-      safety system developed by Computer Engineering
-      students at the University of California,
-      Santa Barbara, as part of ECE 189.
+    <!-- HERO SECTION -->
+    <div class="hero" id="home">
+      <div class="container hero-inner">
+        <div>
+          <div class="eyebrow">
+            UCSB · ECE 189 · Computer Engineering Capstone
+          </div>
 
-      Our project aims to improve cyclist awareness
-      and reduce accident risks by integrating
-      radar-based vehicle detection, fall detection,
-      GPS navigation, turn signals, and real-time
-      safety alerts.
+          <h1>
+            Ride smarter.<br>
+            <em>Ride safer.</em>
+          </h1>
 
-      CIS features a handlebar-mounted display and
-      a companion Android application.
-    </p>
-  </section>
+          <p class="lead">
+            Cyclist Integrated Safety (CIS) is a
+            student-developed smart bicycle system
+            designed to improve rider awareness
+            through vehicle detection, navigation,
+            and real-time safety alerts.
+          </p>
 
-  <section id="features">
-    <h2>System Features</h2>
+          <div class="actions">
+            <a class="button" href="#features">
+              Explore the project
+            </a>
 
-    <div class="cards">
+            <a class="button secondary" href="#team">
+              Meet the team
+            </a>
+          </div>
+        </div>
 
-      <div class="card">
-        <h3>Radar Detection</h3>
-        <p>
-          Detect rear-approaching vehicles and provide
-          real-time safety warnings.
-        </p>
+        <div class="logo-panel">
+          <img
+            src="logo.png"
+            alt="Cyclist Integrated Safety bicycle logo"
+          />
+        </div>
       </div>
-
-      <div class="card">
-        <h3>Fall Detection</h3>
-        <p>
-          Monitor bicycle motion using an IMU to
-          identify potential crashes and initiate
-          emergency alerts.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>GPS Navigation</h3>
-        <p>
-          Provide route planning, GPS tracking,
-          and turn-by-turn directions through
-          a companion Android application.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Smart Turn Signals</h3>
-        <p>
-          Improve bicycle visibility through
-          programmable LED turn signals
-          and physical controls.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Handlebar Display</h3>
-        <p>
-          Show current speed, navigation instructions,
-          and Left, Right, and Behind hazard warnings.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Smart Bell</h3>
-        <p>
-          Generate audible warnings and
-          rider-controlled bell sounds using
-          a speaker and digital amplifier.
-        </p>
-      </div>
-
     </div>
-  </section>
 
-  <section id="team" class="alt">
-    <h2>Meet the Team</h2>
+    <!-- ABOUT SECTION -->
+    <section id="about" class="light">
+      <div class="container">
+        <div class="section-heading">
+          <div class="eyebrow">Our mission</div>
+          <h2>Safety technology for everyday cycling</h2>
+        </div>
 
-    <p>
-      UCSB ECE 189 — Computer Engineering Capstone
-    </p>
+        <p>
+          Developed by Computer Engineering students at
+          the University of California, Santa Barbara,
+          CIS aims to combine rear-approach radar sensing,
+          fall detection, GPS navigation, programmable
+          turn signals, and clear rider alerts.
 
-    <div class="cards">
-
-      <div class="card">
-        <h3>Daniel Llanito Galvan</h3>
-        <p>Turn Signal System</p>
+          Our planned system pairs bike-mounted electronics
+          with an Android app and handlebar display.
+        </p>
       </div>
+    </section>
 
-      <div class="card">
-        <h3>Kandy Mao</h3>
-        <p>GPS System and Android App Integration</p>
+    <!-- FEATURES SECTION -->
+    <section id="features">
+      <div class="container">
+        <div class="section-heading">
+          <div class="eyebrow">What we're building</div>
+          <h2>Six connected safety features</h2>
+          <p>
+            These features describe our capstone design
+            goals and are currently under development.
+          </p>
+        </div>
+
+        <div class="grid">
+
+          <article class="card">
+            <div class="num">01</div>
+            <h3>Rear-Approach Radar</h3>
+            <p>
+              Identify vehicles approaching from behind
+              and produce directional warnings.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="num">02</div>
+            <h3>Fall Detection</h3>
+            <p>
+              Use motion sensor data to identify possible
+              crashes and support an emergency-contact workflow.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="num">03</div>
+            <h3>GPS Navigation</h3>
+            <p>
+              Plan rides and transmit speed and turn
+              information from an Android phone to the bike.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="num">04</div>
+            <h3>Turn Signals</h3>
+            <p>
+              Provide rider-controlled, programmable
+              LED turn indicators.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="num">05</div>
+            <h3>Handlebar Display</h3>
+            <p>
+              Present speed, upcoming turns, and left,
+              behind, and right hazard indicators.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="num">06</div>
+            <h3>Smart Bell & Alerts</h3>
+            <p>
+              Offer audible warnings and a rider-controlled
+              bell through dedicated onboard audio hardware.
+            </p>
+          </article>
+
+        </div>
       </div>
+    </section>
 
-      <div class="card">
-        <h3>Grace Nelson</h3>
-        <p>Haptic Response and Android App Integration</p>
+    <!-- SYSTEM ARCHITECTURE -->
+    <section class="architecture" id="system">
+      <div class="container">
+
+        <div class="section-heading">
+          <div class="eyebrow" style="color:#d5e9b6">
+            System concept
+          </div>
+
+          <h2>Phone, controller, and bike-mounted alerts</h2>
+          <p>
+            Our planned architecture divides navigation
+            from safety-critical sensing and physical
+            output control.
+          </p>
+        </div>
+
+        <div class="flow">
+
+          <div class="flow-box">
+            <strong>Android Phone</strong>
+            <small>
+              GPS · Route planning · Ride history
+            </small>
+          </div>
+
+          <div class="arrow" aria-hidden="true">↔</div>
+
+          <div class="flow-box">
+            <strong>ESP32-S3</strong>
+            <small>
+              Bluetooth LE · Sensor data · Control logic
+            </small>
+          </div>
+
+          <div class="arrow" aria-hidden="true">→</div>
+
+          <div class="flow-box">
+            <strong>Bike Feedback</strong>
+            <small>
+              TFT display · LED signals · Speaker
+            </small>
+          </div>
+
+        </div>
+
+        <p class="architecture-note">
+          Radar and IMU sensing are designed to support
+          local alerts even when the phone is disconnected.
+          Hardware integration and performance testing
+          are ongoing.
+        </p>
+
       </div>
+    </section>
 
-      <div class="card">
-        <h3>Anthony Pulmano</h3>
-        <p>Rear Detection and Radar</p>
+    <!-- TEAM SECTION -->
+    <section id="team" class="light">
+      <div class="container">
+
+        <div class="section-heading">
+          <div class="eyebrow">People behind CIS</div>
+          <h2>Meet our team</h2>
+          <p>UCSB ECE 189 · 2026–2027</p>
+        </div>
+
+        <div class="team-grid">
+
+          <div class="member">
+            <strong>Daniel Llanito Galvan</strong>
+            <span>Turn Signal System</span>
+          </div>
+
+          <div class="member">
+            <strong>Kandy Mao</strong>
+            <span>GPS System & Android App Integration</span>
+          </div>
+
+          <div class="member">
+            <strong>Grace Nelson</strong>
+            <span>Haptic Response & Android App Integration</span>
+          </div>
+
+          <div class="member">
+            <strong>Anthony Pulmano</strong>
+            <span>Rear Detection & Radar</span>
+          </div>
+
+          <div class="member">
+            <strong>Long Truong</strong>
+            <span>IMU, Fall Detection & Emergency Alerts</span>
+          </div>
+
+          <div class="member">
+            <strong>Leonardo Young</strong>
+            <span>Smart Bell System</span>
+          </div>
+
+        </div>
       </div>
+    </section>
 
-      <div class="card">
-        <h3>Long Truong</h3>
-        <p>IMU, Fall Detection and Emergency Alerts</p>
+    <!-- PROJECT PROGRESS -->
+    <section id="progress">
+      <div class="container">
+
+        <div class="section-heading">
+          <div class="eyebrow">2026–2027 Capstone</div>
+          <h2>Project Roadmap</h2>
+        </div>
+
+        <div class="milestones">
+
+          <div class="milestone">
+            <h3>Fall · Design & Prototyping</h3>
+            <p>
+              Finalize architecture, choose components,
+              build app mockups, and begin individual
+              hardware tests.
+            </p>
+          </div>
+
+          <div class="milestone">
+            <h3>Winter · Integration</h3>
+            <p>
+              Connect sensors, microcontroller, app,
+              and outputs into a working prototype
+              for controlled testing.
+            </p>
+          </div>
+
+          <div class="milestone">
+            <h3>Spring · Validation & Demo</h3>
+            <p>
+              Improve reliability, test mounting and
+              outdoor readability, and prepare the
+              final demonstration.
+            </p>
+          </div>
+
+        </div>
       </div>
+    </section>
 
-      <div class="card">
-        <h3>Leonardo Young</h3>
-        <p>Smart Bell System</p>
-      </div>
-
-    </div>
-  </section>
+  </main>
 
   <footer>
-    Cyclist Integrated Safety (CIS)
-    <br>
-    UC Santa Barbara | ECE 189
-    <br>
-    2026–2027 Senior Capstone Project
+    <div class="container">
+      <span>© 2026–2027 Cyclist Integrated Safety</span>
+      <span>UC Santa Barbara · ECE 189 Senior Capstone</span>
+    </div>
   </footer>
 
 </body>
